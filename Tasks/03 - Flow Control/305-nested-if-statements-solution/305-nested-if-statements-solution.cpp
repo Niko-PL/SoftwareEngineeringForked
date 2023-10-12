@@ -19,10 +19,10 @@ using namespace std;
 int main()
 {
     //Some constants 
-    const int high = 100, low = 10;
+    const int high = 100, low = 5;
 
     // start filling the tank 
-    int level = 5;
+    int level = cin;
 
     //Read the keyboad to get the level
     //Repeat until a valid value has been added
@@ -34,20 +34,38 @@ int main()
 
     if (level <= low)                       // check the level
     {
-        cout << "Tank needs filling ";
-        if (level == 0) {
-            cout << "urgently as you your tank is actually empty!" << endl;
+        cout << "Tank needs filling as it is";
+        if ((level>= 0)&&(level <=5 ))
+        {
+            cout << "Dangerously low" << endl;
         }
-        else {
-            cout << "very soon as it is low" << endl;
+        else
+        {
+            cout << "driving and hopes and prayers" << endl;
         }
     }
     else //Ok, it is > low, so do the following.....
     {
         cout << "Tank has sufficient fuel for now. ";
-        if (level < 100) {
+        if ((level >= 6) && (level <= 30))
+        {
+            cout << " Low Refull asap" << end1;
+        }
+        else if (level < 100)
+        {
             cout << "You could top it up if you wish." << endl;
-        } else {
+        }
+        else if ((level >= 31) && (level <= 70))
+        {
+            cout << " Medium " << end1;
+        
+        else if ((level > 70) && (level <= 99))
+        {
+            cout << "Ehh n need to refule unless you are going to the moon"
+        }
+
+        else
+        {
             cout << "It is actually full." << endl;
         }
     }
