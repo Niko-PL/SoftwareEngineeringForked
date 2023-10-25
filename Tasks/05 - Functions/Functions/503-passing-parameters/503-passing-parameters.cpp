@@ -11,8 +11,7 @@ void displayBanner(int stringLen)
 
 int main()
 {
-	const string message = "Welcome to Computer Science";
-
+	const string message = "This is the beefeaters";
 	//Get the length of the string
 	int L = message.length();			//L is now a LOCAL variable
 
