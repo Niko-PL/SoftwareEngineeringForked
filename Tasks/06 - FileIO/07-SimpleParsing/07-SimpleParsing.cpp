@@ -39,7 +39,7 @@ int main()
 
     //Display the result
     cout << "Subject Area is " << subjectArea << endl;
-
+    inputStream.close();
     int code;
 
     //TO DO: 
@@ -47,8 +47,21 @@ int main()
     // Store it in the integer variable code
     // Calculate the next value (code + 1)
     // Write out the new module string (correct answer is COMP1001).
+    inputStream.open(fn);
+    string nextData;
+    for (unsigned int x = 0; x < 8;x++)
+    {
+        inputStream >> nextData;
+    }
+    int subjectNumber;
+    inputStream >> subjectNumber;
+    subjectNumber = subjectNumber + 1;
 
-    // (iii) Close
+    cout << "The number is aactually " << subjectNumber << endl;
+
+
+    
+    
     inputStream.close();
 
     return 0;
