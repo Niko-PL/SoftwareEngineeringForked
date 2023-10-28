@@ -1,5 +1,9 @@
 # User Input and File IO
 
+Reading and writing files is a very common task in computer science. In this lab, you will cover the basics of file input and output (IO). We will also look at some methods for extracting information stored within files, and some of the challenges as well.
+
+Follow the instructions and perform all tasks in order. All tasks have starter code and solutions.
+
 **Contents**
 
 * [Streams](#streams)
@@ -24,7 +28,7 @@
 
 A stream is computing concept that turns up in many places, including file processing and network programming. Conceptually, a stream is a sequence of bytes are are either read from a data source, or sent to data destination (sometimes known as a data sink).
 
-> You can think of a *stream* as a pipe down which you send data one byte at a time. The first to be written in is the first to be read out.
+> You can think of a *stream* as a pipe down which you send data one byte at a time. The first to be written in is the first to be read out. We say it follows a "First In First Out" (FIFO) principle.
 
 <figure>
 <img src="./img/binarystream.jpg" width="600px">
@@ -33,13 +37,13 @@ A stream is computing concept that turns up in many places, including file proce
 
 The the source and destination could be:
 
-* Terminal (keyboard or output)
-* File on a disk
+* Terminal (keyboard input or text output)
+* A File on a disk
 * A block of memory
 * A "network socket"
-* A device connected (e.g. audio playback or mouse)
+* Another connected device (e.g. audio playback or mouse)
 
-The pipe itself also has some properties to be aware of:
+The pipe itself also has some properties we need to be aware of:
 
 * Data flow is typically one-direction 
 * Data ordering follows a "First In First Out" (FIFO) pattern.
@@ -49,16 +53,17 @@ The pipe itself also has some properties to be aware of:
   * Write operations will block in the event of a full pipe.
   * Read operations will typically block if the pipe is empty.
 
-With this in mind, the following sections will introduce you to two of the most common uses of streams.
+With this in mind, the following sections will introduce you to some of the most common uses of streams.
 
 * User Input and Output (IO)
 * File IO
+* String processing
 
-Remember - both are conceptually the same. What differs are the types of data source and destination.
+Note - Although these are different types of data source and destination, from the view of the computer, these will appear as virtual identical.
 
 ## Low Level Streams in C
 
-We will use C streams as the workings are less hidden than the C++ equivalent. Going forward, we will use C++ of course.
+We will begin with C streams as the workings are less hidden than the C++ equivalent. Going forward, we will use C++ of course.
 
 | Task | 01-LowLevelIO |
 | - | - | 
@@ -74,7 +79,8 @@ We've been using streams all along! There are two streams that are already open:
 
 * `stdin` which is the default stream for read when you use the standard input functions, such as `scanf()` and `getchar()`
 * `stdout` which is the default stream for write when you use the standard output functions, such as `puts()`, `printf()` and `putchar()`.
-* The declarations for all these functions (and type `FILE`) are all in the header file `stdio.h`. That is why it is included at the top of almost every C program.
+
+The declarations for all these functions (and type `FILE`) are all in the header file `stdio.h`. That is why it is included at the top of almost every C program.
 
 We saw how the following were identical:
 
@@ -95,7 +101,7 @@ The filetype for a stream is a structure named `FILE`. We usually work with a po
 
 > I know pointers are confusing. Don't worry about this as we won't be working with FILE* for much longer
 
-The stream `stdout` is already created for us. However, when writing to a file, we need a new stream with a file as it's destination. To obtain such a stream, we can use the standard function `fopen_s`, specifying the file path and mode:
+The stream `stdout` is already created for us, and by default, it pointed to the terminal output. However, when writing to a *file*, we need a new stream with a file as it's destination. To obtain such a stream, we can use the standard function `fopen_s`, specifying the file path and mode:
 
 ```C++
 FILE* outputStream;
@@ -138,7 +144,7 @@ if (inputStream == nullptr) {
 }
 ```
 
-If successful, we can now ready the stream (and hence the contents of the file):
+If successful, we can now read the stream (and hence the contents of the file):
 
 ```C++
 int number;
@@ -151,7 +157,7 @@ As with `scanf` (where the input stream is `stdin`), the string value is read as
 fclose(inputStream);
 ```
 
-The syntax of C streams can be a bit off-putting. The good news is that C++ has a much more tidy system for doing the same thing.
+The syntax of C streams can be a bit off-putting. The good news is that C++ has a much more tidy system for doing the same thing. Being an object orientated language, it is able to hide many of the details.
 
 ## C++ Streams with `iostream`
 
@@ -169,7 +175,7 @@ We have already encountered streams in C++. Every time we use `cout` or `cin`, w
 
 **Key Points:**
 
-To open a file to write, we use the data type `ofstream` and the `open` function as follows:
+To open a file to write, we use the data type `ofstream` (short for *output file stream*) and the `open` function as follows:
 
 ```C++
 ofstream outputStream;
@@ -193,9 +199,11 @@ if (outputStream.is_open() == false) {
 | 4. | <a title="It contains the declaration for `ofstream`">Why do you think we also include the header file `fstream`?</a> |
 | | |
 
-> Additional
+> **Additional**
 >
 > Note how I've used `cerr` instead of `cout`? This uses another pre-existing stream called `stderr`. This is used for error messages, and separates them from application output.
+>
+> It is possible to redirect `cerr` so the user does not see it. This won't be done in this lab, but be aware this is possible
 
 Now we write to the file just like using `cout`:
 
@@ -214,13 +222,13 @@ outputStream.close();
 
 ### Objects
 
-Did you notice how the "dot notation" was used in the code above? For example:
+Did you notice how the "dot notation" was used in the code above? This is because we are using a special type of variable known as an **object**. For example:
 
 ```C++
-ofstream outputStream;
+ofstream outputStream; //Object
 ```
 
-In the previous lab, we created new data types using **structures**.
+We did something similar in the previous lab, when we created new data types using **structures**.
 
 ```C++
 struct Point {
@@ -233,7 +241,7 @@ dot.x = dot.y;  //Modify the member x
 dot.y = 0;      //Modify the member y
 ```
 
-Structure types have members (`x` and `y` in this case) that we can read and write. 
+Structure types have *members* (`x` and `y` in this case) that we can read and write. 
 
 `ofstream` is also a custom type, and will have members as well (some of them hidden). This will include data relating to the underlying file stream etc.. 
 
@@ -271,9 +279,11 @@ Finally, we close the file
 outputStream.close();
 ```
 
+The syntax might seem a little strange, including the use of the `<<` operator. Later in the course, we will meet a nice feature of C++ (and other languages) known as *operator overloading*, where you will learn to create your own objects that behave in a similar way.
+
 ### Reading with `ifstream`
 
-Let's now read the data from out newly created file and display it in the terminal
+Let's now read the data from our newly created file and display it in the terminal
 
 | Task | 02-OpenForRead |
 | - | - |
@@ -316,12 +326,12 @@ while (inputStream.eof() == false) {
 
 |  | |
 | - | - |
-| 5. | Step through the code. <a title="Two words. The final read fails as the end of file is detected">How many reads are performed?</a> |
+| 5. | Step through the code. <a title="Two words. The final read fails to read any new data as the end of file is detected">How many reads are performed?</a> |
 | | |
 
-Similar to `cin`, we read using the `>>` operators. Each time we do this, we then check for an end of file using the `eof()` member function. This continues until the end of the file is reached.
+Similar to `cin`, we read using the `>>` operator. Each time we do this, we then check for an end of file using the `eof()` member function. This continues until the end of the file is reached.
 
-The final read will fail to read any data. This is what flags that the end of the file has been reached. Only then will the `eof()` function return a `true`.
+The final read will fail to read any data. This also flags that the end of the file has been reached. Only then will the `eof()` function return a `true`.
 
 | Task | 04-TimesTables |
 | - | - |
@@ -348,7 +358,7 @@ int main()
 
 ### Using Flags
 
-In the task [writing with ofstream](#writing-with-ofstream), the file was recreated every time. This is the default behavior. Sometimes we wish to modify the behavior, such as appending to the end of an existing file.
+In the task [writing with ofstream](#writing-with-ofstream), the file was recreated every time, overwriting the existing file if present. This is the default behavior. Sometimes we wish to modify the behavior, such as appending to the end of an existing file.
 
 For this, we can use special *flags* to modify file IO.
 
@@ -361,7 +371,7 @@ For this, we can use special *flags* to modify file IO.
 | 5. | Re-run the code again. What happened to the file? |
 | 6. | Now comment out the line that reads: `outputStream.open("myfile.txt");` |
 | 7. | Uncomment the line that reads: `outputStream.open("myfile.txt", ios::app);` |
-| 8. | Rerun the experiment and note the change in behaviour |
+| 8. | Re-run the experiment and note the change in behaviour |
 
 **Key Points**
 
@@ -382,13 +392,13 @@ For your reference, a table of flags have been included:
 You can combine these flags with the **or** operator `|`
 
 ```C++
-`outputStream.open("myfile.txt", ios::app | ios:binary );`
+outputStream.open("myfile.txt", ios::app | ios:binary );
 ```
 ## Parsing Files
 
-Very often, we want to extract a particular piece of information from a file. We may also want to convert it from a string into a number. The term parsing data includes reading structured string data and extracting relevant information for further processing.
+Very often, we want to extract a particular piece of information from a file. We may also want to convert it from a string into a number. The expression *parsing data* includes reading structured string data and extracting relevant information for further processing.
 
-We will do some basic file parsing in the following sections. In all these sections, we start with the following file contents:
+This is an important topic, so we will do some basic file parsing in the following sections. In most these sections, we start with the following file contents:
 
 ```
 Hello COMP1000
@@ -397,8 +407,8 @@ Subject Area: COMP
 Module ID: 1000
 ```
 
-The structure is as follows:
-* Ignore all text until you encounter an underline 
+The structure is described as follows:
+* Text before the underline are just comments 
 * Then you will find the term `Subject Area:` followed by the subject area code (string)
 * Then you will find the term `Module ID:` followed by the module code (integer)
 
@@ -411,7 +421,7 @@ With this method, we will read one string at a time:
 | Task | 07-SimpleParsing |
 | - | - |
 | 1. | Make 07-SimpleParsing the start up project |
-| 2. | Build and run the code to see what it does |
+| 2. | Build and run the code to see what it does. Read all comments |
 
 So far, it reads each string at a time until it gets to the subject area (COMP).
 
@@ -422,6 +432,18 @@ So far, it reads each string at a time until it gets to the subject area (COMP).
 | - | A solution is provided |
 | | |
 
+**Key Points**
+
+* This approach relied on knowing precisely how many words there were, and in what order.
+* If the file format were to change slightly, this code might fail. We might say this is *fragile* 
+* This demonstrated one of the methods for converting strings to integers
+
+```C++
+    int code;
+    inputStream >> code;
+```
+
+The downside of this is that if it fails, it will do so *silently*. There are other more *robust* techniques that we will meet later.
 
 ### Reading one line at a time
 
@@ -431,16 +453,17 @@ Sometimes we want to read in each line, separating reads by just newline charact
 
 | Task | 08-ReadingByLine |
 | - | - |
-| 1. | Make 06-getline the startup project |
+| 1. | Make `06-getline` the startup project |
 | 2. | Build and step through the code. Read the comments to try and understand it |
 | 3. | <a title="Use the fail function `fail()` function">How do you know if you've successfully read a line?</a> |
 | 4. | <a title="You add them with +">How do you join two strings together in C++?</a> |
 | 5. | Now write a loop to read all lines from the file and append them to the `allLines` string. When the program completes, `allLines` should contain the complete contents of the file. |
+| Hint | Look carefully at the `fail()` and `eof()` member functions. You might struggle with this task at first. |
 | - | A solution is provided |
 
 **Key Points**
 
-In this task, we use the function `getline` to read one line at a time, and store the result in one large string.
+In this task, we use the function `getline()` to read one line at a time, and store the result in one large string.
 
 ```C++
 getline(inputStream, nextLine);
@@ -477,7 +500,9 @@ cout << s3;
 
 This would display `Hello World` in the terminal. 
 
-> How this works will be revealed when we write our own class types. For now, we can enjoy the simplicity this brings!
+> How this works will be revealed when we write our own C++ class types and perform some *operator overloading*. 
+>
+> For now, we can enjoy the simplicity this brings!
 
 ### String Streams
 
@@ -490,17 +515,17 @@ So far we have met the following types of stream:
 
 We have more more for you!
 
-* `istringstream` - read only, where the source is a string.
+* `istringstream` - read only, where the source is a string (of words separated by whitespace).
 
 This is very useful for reading individual words from a longer string. Let's look at it now:
 
 | Task | 09-StringStreams |
 | - | - |
-| 1. | Make 09-StringStreams the start up project. Build and step through the code, reading all comments |
+| 1. | Make `09-StringStreams` the start up project. Build and step through the code, reading all comments |
 | 2. | Write a loop to read all words in the string, and count how many there are. |
 | -  | Within your loop, write each word on a separate line. When you read the word "Always.", add an extra line break. |
 | 3. | Display how many words were read |
-| 4. | A solution is provided |
+| - | Again, make use of the `eof()` and `fail()` functions. A solution is provided |
 
 The output should look like this:
 
@@ -533,7 +558,11 @@ Total Number of Word: 22
 
 **Key Points**
 
-We also saw how to compare a string with another.
+* This time, the stream was not a file, but another string. Despite this, it behaves in exactly the same way. We even use the "end of file" function `eof()`.
+   * Whether working with a keyboard, file, network or some other device, most basic operations are identical if you can obtain a `stream` object.
+   * `cout` and `cin` do not ever end, so `eof()` always returns `false`. You can call it however.
+
+* We also saw how to compare a string with another.
 
 ```C++
 if (nextWord == "May") {
@@ -543,11 +572,15 @@ else {
     cout << "Something weird is happening?" << endl;
 }
 ```
-Again, with C++ strings you can compare with the `==` operator.
+> This is *another* example of *operator overloading*. C++ strings can use the `==` operator to compare the *string contents*. This is different to testing if they are the same object.
 
 ### String Conversion
 
-So far we have looked at ways of reading text data into a string, either one word at a time, or one line at a time. A common requirement is to extract relevant data for further processing or storage. In the case of numerical data, this will require an attempt to "convert" a string to some numerical data type. To write robust code (that does not crash), we also need to consider conditions where this is not possible.
+So far we have looked at ways of reading text data into a string, either one word at a time, or one line at a time. A common requirement is often to extract relevant data for further processing or storage. In the case of numerical data, this will require an attempt to "convert" a string to some numerical data type. To write robust code (that does not crash or return incorrect values silently), we also need to consider conditions where this is not possible.
+
+> When we write software, we often need to be *defensive*. This means anticipating conditions where something might fail, and taking necessary actions if they do.
+>
+> This is a fundamental of good practice.
 
 There are a number of string conversion functions available. Some of them are listed below
 
@@ -575,9 +608,17 @@ We will now use the `stoi()` function to construct a new module code. First we w
 | - | The correct output should be COMP1001 |
 | - | A solution is provided |
 
+**Key Points**
+
+* Note how some of the code is now moved out into functions?
+  * This was done (in part) to keep the main function simple, so the reader can focus on the aspects that are important.
+ * At this point, we are assuming the file format to be perfect and predictable
+
 ### Exception Handling
 
-In the previous example, we performed a conversion from type `string` to type `int`. However, there is a potential problem here. What if the string cannot be converted to an integer?
+In the previous example, we performed a conversion from type `string` to type `int`. However, there is a potential problem here. What if the string cannot be converted to an integer? Maybe the file format changed and this was not accounted for in the software?
+
+In this task, we will demonstrate just this:
 
 | TASK | 11-ExceptionHandling |
 | - | - |
@@ -585,21 +626,21 @@ In the previous example, we performed a conversion from type `string` to type `i
 | 2. | Build and run the code. Note that it crashes |
 | 3. | Use the debugger to find WHERE the code crashes |
 | - | <a title="moduleNumber = stoi(nextWord);">On what line does it crash?</a> |
-| 4. | Use the debugger to find WHY ir crashes |
+| 4. | Use the debugger to find WHY it crashes |
 | - | <a title="nextWord is not a number. It is a letter (Roman Numeral)">Why does it crash?</a> |
 | 5 | Now inspect the `createFile()` function. Read through it and especially the comments. Can you see the problem? |
 
-This might look a bit drastic, but it is better that the code has crashed so that you are alerted to the problem.
+This might look a bit drastic, but it is helpful that the code has crashed so that you are alerted to the problem.
 
 > The worst thing would be for this to fail silently. Code could get deployed to a customer with unpredictable consequences
 
-However, all is not lost. We have another (powerful) method of detecting these errors so that they can be handled more *gracefully*. 
+However, all is not lost. We have another (powerful) method of detecting these errors so that they can be handled more *gracefully*. This is known as **exception handling**.
 
 The writers of `stoi()` decided that in the event of a failure, it would **throw an exception**. 
 
 > Exceptions are a special type of error that make it easier to communicate errors in software no matter how deeply hidden they may be. 
 
-As a consumer of the `stoi()` function, we are able to **catch** any errors and find out more details about them.
+As we **try** to use the `stoi()` function in our code, so we are able to **catch** any errors and find out more details about them.
 
 The concept works as follows:
 
@@ -630,12 +671,20 @@ catch (exception e)
 | - | A solution is provided |
 | | |
 
+**Key Points**
+
+* try-catch is an advanced, but very important technique.
+   * It is far from unique to C++. Almost every modern languages has a try-catch equivalent (most use very similar syntax)
+* It is hoped that you were able to use the debugger to track down the line that crashed.
+   * This is a **vital skill** that you are encouraged to practise during these labs AND when you attempt your coursework.
+* Again, note how `cout` and `cerr` are both used. One is developer focused (to aid crash reporting and diagnostics) and the other is user focused (so they can report the bug).
+
 ### Using find
 
 In this section, we introduce you to a couple other useful functions:
 
 * `find()` - can search for a string within another string, returning the character position (if successful) or -1 if not successful.
-* `substr()` - can be used to extract a string from within another string
+* `substr()` - can be used to extract a smaller string from within another larger string
 
 | TASK | 12-findAndSubstr |
 | - | - |
@@ -648,16 +697,17 @@ In this section, we introduce you to a couple other useful functions:
 
 **Key Points**
 
-Note the two forms of `substr()`
+* Note the two forms of `substr()`
 
 ```C++
 string previous = dataString.substr(a, b);    //from a ... (b-1)
 string following = dataString.substr(b);      //From b... end
 ```
-* With two parameters, it returns a string in the range to `a...b-1`
-* With one parameter, it returns a string in the range `b...N`, where `N` is the position of the last character in the string.
+With two parameters, it returns a string in the range to `a...b-1`.
+ With one parameter, it returns a string in the range `b...N`, where `N` is the position of the last character in the string.
 
-Note also that each search used a separate instance of `istringstream`. This is safer than trying to reuse the same one (the documentation was vague!)
+* Note also that each search used a separate instance of `istringstream`. This is safer than trying to reuse the same one (the documentation was vague!)
+* This method is somewhat more robust than before, and much better than simply counting words. It is more tolerant to the file format changing. 
 
 ### Regular expressions (advanced)
 
@@ -707,7 +757,7 @@ Here is a key extract from this task:
 The function `regex_search()` takes three parameters:
 
 * The string being searched
-* A special type `smatch` which presents as an array of matched substrings
+* A special type `smatch` which presents as an array of matched substrings (more C++ cleverness)
 * A search pattern of type `regex`
 
 The tricky part is getting the search pattern right. This is a VERY big topic, but some basics are presented here. Our pattern is as follows:
@@ -719,20 +769,41 @@ This can be interpreted as:
 * The literal string "Module", 
 * followed by any number of spaces \\s* (including zero spaces), 
 * followed by the string "ID:", 
-* followed by any number of spaces `\\s*`, 
-* followed by at least one digit `\\d+`
+* followed by *any* number of spaces `\\s*`, 
+* followed by *at least one* digit `\\d+`
 
-The parenthesis capture the components of the search we wish to extract in `match`. In this case, we expect to capture "ID" and "1000"
+The parenthesis `()` capture the components of the search we wish to extract in `match`. In this case, we expect to capture "ID" and "1000"
 
 > Note - normally, regular expressions use a single \\. For C++, you use two \\\
 
-It should be stressed - this is an ADVANCED task. It is probably just as good to know regular expressions exist. It would be ambitious to use them at this stage.
+**Key Points**
 
-If you are interested, do experiment with https://regex101.com/
-
+* It should be stressed - this is an ADVANCED task. At this stage, it is probably useful to know regular expressions exist and have an idea of what they are. It would be ambitious to use them at this stage.
+   * If you are interested, do experiment with https://regex101.com/
+* Nearly every language has a regular expression library you can use. At some point you might want to take some time to experiment with them. They can save a LOT of code. 
 
 # Challenges
 
 Challenges are for self-study only. Solutions are not usually provided. They are intended to encourage you to explore new ideas. By all means use AI tools to help you .  
 
-```
+| Challenge 1 - File Copy |
+| - | 
+| Can you write a program to read a file and write the same contents into another |
+| This will (in effect) perform a file copy |
+| This is one example where the C function `getchar()` makes things simpler |
+
+| Challenge 2 - Web Scraping |
+| - |
+| In the folder for challenge 2 is a file `Fake Python.html` (source: https://realpython.com/beautiful-soup-web-scraper-python/) |
+| Read this file and extract the location using the attribute id="location" |
+| The correct answer is "Stewartbury" |
+
+| Challenge 3 - Web Scraping with regex (advanced) |
+| - |
+| Use regex to extract the location. Try and make it as robust as you can |
+| Even with this, note how *fragile* the solution can be |
+
+---
+
+[Back to Table of Contents](./README.md)
+
