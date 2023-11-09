@@ -47,6 +47,11 @@ int main()
             //TODO:
             // Read the next word
             // If successful, try to convert to an integer then break from the while loop
+            iss >> nextWord;
+            int idnum = stoi(nextWord);
+            idnum += 1;
+            nextWord = to_string(idnum);
+            cout << "COMP"+nextWord << endl;
         }
     }
 

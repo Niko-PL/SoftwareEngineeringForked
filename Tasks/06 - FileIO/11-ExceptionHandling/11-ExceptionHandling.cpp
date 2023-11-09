@@ -46,20 +46,28 @@ int main()
             cout << "Found \"ID:\". The code should be next...." << endl;
             // Read the next word - it "should" be the module number, encoded as a string
             iss >> nextWord;
-            if (!iss.fail()) {
-                //Convert a string to an integer
-                moduleNumber = stoi(nextWord);
-                //Write the new module code
-                cout << "COMP" << moduleNumber + 1 << endl;
-                //We are done! Break from the outer loop
-                break;
+            if (!iss.fail()) 
+            {
+                try
+                {
+                    moduleNumber = stoi(nextWord);
+                    cout << "COMP" << moduleNumber + 1 << endl;
+                    break;
+                }
+                catch (exception e)
+                {
+                    cout << "Error " << e.what() << " has occured program ending" << endl;
+                    return -1;
+                }
+               
+                
             }
         }
     }
 
     // Done
     return 0;
-}
+ }
 
 // Create a test file with filename fn
 void createFile(string fn)

@@ -18,11 +18,12 @@ int main()
 
     //Write the complete string to the the terminal
     cout << sentence << endl;
-
+    
+    /*
     //Read first word (words are separated by spaces or newlines)
     istringstream iss(sentence);
-    iss >> nextWord;
-
+    
+    
     //Was a word actually read?
     if (iss.fail()) {
         //If it failed, we're probably at the end of the stream
@@ -46,6 +47,28 @@ int main()
         cout << "We reached the end of the file" << endl;
     }
     
+    */
+
+    istringstream iss(sentence);
+    while (iss.eof() == false)
+    {
+        iss >> nextWord;
+        if (iss.fail())
+        {
+            cout << "Failed to read, so cant start" << endl;
+            return -1;
+        }
+        else if (nextWord == "Always.")
+        {
+            cout << nextWord << endl;
+            cout << endl;
+
+        }
+        else
+        {
+            cout << nextWord << endl;
+        }
+    }
     //Done
     return 0;
 

@@ -27,14 +27,14 @@ int main()
     cout << dataString << endl;
 
     // Find the substring "ID:"
-    int pos = dataString.find("ID:");
+    int pos = dataString.find("Area:");
     if (pos == -1) {
-        cerr << "Identifier ID: is missing from file" << endl;
+        cerr << "Identifier Area: is missing from file" << endl;
         return -1;
     }
 
     //Now extract the string from this point forwards
-    cout << "Found \"ID:\" at character position " << pos << endl;
+    cout << "Found \"Area:\" at character position " << pos << endl;
     string previous  = dataString.substr(0, pos);   //Up to the location pos-1
     string following = dataString.substr(pos);      //From pos to the end
 
@@ -52,10 +52,10 @@ int main()
     cout << "Followed by " << strCode << endl;
 
     //Conversion
-    int code;
+    //int code;
     try {
-        code = stoi(strCode);
-        cout << "New Module ID: " << code + 1 << endl;
+        //code = stoi(strCode);
+        cout << "New Module ID: " << strCode + "-WHAP!" << endl;
     }
     catch (exception e)
     {
